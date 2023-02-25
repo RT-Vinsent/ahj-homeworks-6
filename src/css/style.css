@@ -1,0 +1,33 @@
+@font-face {
+  font-family: "OpenSans";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../font/OpenSans-Regular.woff") format("woff");
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  /* position: relative; */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #c1dcdd;
+  border: #697278;
+  color: #000000;
+  font-size: 16px;
+  box-sizing: border-box;
+  /* font-family: "Comic Sans MS", "Trebuchet MS", "Lucida Sans Unicode", Arial, Helvetica, sans-serif; */
+  font-family: "OpenSans";
+  /* user-select: none; */
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* отключает синий фон на телефоне при клике */
+}
+
+H3 {
+  text-align: center;
+  margin: 10px auto 0;
+}
