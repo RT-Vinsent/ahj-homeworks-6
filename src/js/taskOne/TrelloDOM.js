@@ -47,7 +47,7 @@ export default class TrelloDOM {
         Trello - система управления задачами.
       </H3>
       <div class="board" data-id="board">
-        <div class="list-container" data-id="todo" data-board="list">
+        <div class="list-container" data-id="todo" data-board="column">
           <div class="list-name">Сделать</div>
           <!-- список карточек -->
           <ul class="list-card" data-id="card-list"></ul>
@@ -63,7 +63,7 @@ export default class TrelloDOM {
           <div class="card-add-btn" data-id="creator-open">+ Добавить карточку</div>
         </div>
         
-        <div class="list-container" data-id="progress" data-board="list">
+        <div class="list-container" data-id="progress" data-board="column">
           <div class="list-name">В процессе</div>
           <!-- список карточек -->
           <ul class="list-card" data-id="card-list"></ul>
@@ -79,7 +79,7 @@ export default class TrelloDOM {
           <div class="card-add-btn" data-id="creator-open">+ Добавить карточку</div>
         </div>
 
-        <div class="list-container" data-id="done" data-board="list">
+        <div class="list-container" data-id="done" data-board="column">
           <div class="list-name">Готово</div>
           <!-- список карточек -->
           <ul class="list-card" data-id="card-list"></ul>
@@ -108,7 +108,8 @@ export default class TrelloDOM {
     this.board = this.container.querySelector('[data-id="board"]');
 
     this.board.addEventListener('click', (event) => this.onBoardClick(event));
-    this.board.addEventListener('mousedown', (event) => this.onBoardDown(event));
+    // this.board.addEventListener('mousedown', (event) => this.onBoardDown(event));
+    this.board.addEventListener('pointerdown', (event) => this.onBoardDown(event));
 
     this.cardDrag = this.container.querySelector('.card-drag');
   }
@@ -244,7 +245,7 @@ export default class TrelloDOM {
     const { card } = this;
     if (!card) { return false; }
 
-    const list = card.closest('[data-board="list"]');
+    const list = card.closest('[data-board="column"]');
     const cards = list.querySelectorAll('[data-id="card"]');
     const index = Array.from(cards).indexOf(card);
 
@@ -272,14 +273,18 @@ export default class TrelloDOM {
 
   // вешает на страницу обработчики
   addMouseEventsDND() {
-    document.addEventListener('mouseup', this.mouseUp);
-    document.addEventListener('mousemove', this.mouseMove);
+    // document.addEventListener('mouseup', this.mouseUp);
+    // document.addEventListener('mousemove', this.mouseMove);
+    document.addEventListener('pointerup', this.mouseUp);
+    document.addEventListener('pointermove', this.mouseMove);
   }
 
   // удаляет со страницы обработчики
   delMouseEventsDND() {
-    document.removeEventListener('mousemove', this.mouseMove);
-    document.removeEventListener('mouseup', this.mouseUp);
+    // document.removeEventListener('mousemove', this.mouseMove);
+    // document.removeEventListener('mouseup', this.mouseUp);
+    document.removeEventListener('pointermove', this.mouseMove);
+    document.removeEventListener('pointerup', this.mouseUp);
   }
 
   // отжатие мышки
@@ -301,36 +306,66 @@ export default class TrelloDOM {
     const dragRect = this.cardDrag.getBoundingClientRect();
 
     // Массив элементов. Где Y - это Y курсора, а Х - это середина карточки по горизонтали.
+    // Массив содержит все элементы DOM под клоном передвигаемой карточки
     this.bottomEls = document.elementsFromPoint(dragRect.left + dragRect.width / 2, clientY);
+
+    // поиск столбца под клоном передвигаемой карточки
+    this.cardBotElColumn = this.bottomEls.find((el) => el.dataset.board === 'column');
 
     // поиск карточки под клоном передвигаемой карточки
     this.cardBotEl = this.bottomEls.find((el) => el.dataset.id === 'card');
 
-    // остановка, если карточки нет.
-    if (!this.cardBotEl) { return false; }
+    // если есть столбец, но нет карточки
+    if (this.cardBotElColumn && !this.cardBotEl) {
+      // поиск списка для вставки карточеки
+      this.cardBotElList = this.cardBotElColumn.querySelector('[data-id="card-list"]');
+      // поиск карточек в списке.
+      const cards = this.cardBotElList.querySelectorAll('[data-id="card"]');
 
-    // поиск оригинала под клоном передвигаемой карточки
-    const dragged = this.cardBotEl.classList.contains('dragged');
+      // если в столбце нет карточек
+      if (cards.length === 0) {
+        // возврат объекта, где говорится, что нужна вставка в столбец
+        return { dragRect: {}, cardBotRect: {}, column: true };
+      }
 
-    // остановка, если под клоном находится оригинал.
-    if (dragged) { return false; }
+      return false;
+    }
 
-    // координаты карточки под клоном передвигаемой карточки
-    const cardBotRect = this.cardBotEl.getBoundingClientRect();
+    // если есть карточка под клоном
+    if (this.cardBotEl) {
+      // поиск оригинала под клоном передвигаемой карточки
+      const dragged = this.cardBotEl.classList.contains('dragged');
 
-    return { dragRect, cardBotRect };
+      // остановка, если под клоном находится оригинал.
+      if (dragged) { return false; }
+
+      // координаты карточки под клоном передвигаемой карточки
+      const cardBotRect = this.cardBotEl.getBoundingClientRect();
+
+      return { dragRect, cardBotRect, column: false };
+    }
+
+    return false;
   }
 
   // вырезание и вставка карточки в DOM
-  dragAndDropDOM(dragX, dragTopY, dragBotY) {
-    if (dragX && dragTopY) {
+  dragAndDropDOM(value) {
+    // вставка карточки в пустой столбец
+    if (value.column) {
+      this.cardBotElList.appendChild(this.card);
+      return true;
+    }
+
+    // вставка карточки ДО
+    if (value.dragX && value.dragTopY) {
       if (this.cardBotEl.previousSibling !== this.card) {
         this.cardBotEl.before(this.card);
         return true;
       }
     }
 
-    if (dragX && dragBotY) {
+    // вставка карточки ПОСЛЕ
+    if (value.dragX && value.dragBotY) {
       if (this.cardBotEl.nextSibling !== this.card) {
         this.cardBotEl.after(this.card);
         return true;

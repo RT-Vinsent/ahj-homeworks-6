@@ -1,5 +1,7 @@
 import TrelloDOM from './taskOne/TrelloDOM';
 import TrelloController from './taskOne/TrelloController';
+import GalleryDOM from './taskTwo/GalleryDOM';
+import GalleryControl from './taskTwo/GalleryControl';
 
 require('../css/HomeWorkMenu.css');
 
@@ -84,7 +86,7 @@ export default class HomeWorkMenu {
 
     this.taskRemover(); // удаление задач
 
-    // if (!this.taskTwoInited) { this.taskTwoInit(); } // инициализация Задачи № 2
+    if (!this.taskTwoInited) { this.taskTwoInit(); } // инициализация Задачи № 2
 
     this.taskOneInited = false; // состояние задачи № 1
     this.taskTwoInited = !this.taskTwoInited; // состояние задачи № 2
@@ -107,58 +109,58 @@ export default class HomeWorkMenu {
   // удаляет все запущенные задачи
   taskRemover() {
     if (this.taskOneInited) { this.taskOneRemove(); } // удаление Задачи № 1
-    // if (this.taskTwoInited) { this.taskTwoRemove(); } // удаление Задачи № 2
+    if (this.taskTwoInited) { this.taskTwoRemove(); } // удаление Задачи № 2
     // if (this.taskThreeInited) { this.taskThreeRemove(); } // удаление Задачи № 3
   }
 
   // создание Задачи № 1
   taskOneInit() {
-    this.trelloDOM = new TrelloDOM(); // создаём класс управления DOM
-    this.trelloDOM.bindToDOM(this.containerTaskOne); // присваеваем ему div taskOne из DOM
-    this.trelloDOM.drawUI(); // отрисовываем HTML в DOM
+    this.taskOneDOM = new TrelloDOM(); // создаём класс управления DOM
+    this.taskOneDOM.bindToDOM(this.containerTaskOne); // присваеваем ему div taskOne из DOM
+    this.taskOneDOM.drawUI(); // отрисовываем HTML в DOM
 
-    this.trelloController = new TrelloController(this.trelloDOM); // создаём класс логики
-    this.trelloController.init(); // инициализируем класс логики
+    this.taskOneController = new TrelloController(this.taskOneDOM); // создаём класс логики
+    this.taskOneController.init(); // инициализируем класс логики
   }
 
   // создание Задачи № 2
-  // taskTwoInit() {
-  //   this.listEditPlay = new ListEditPlay(); // создаём класс управления DOM
-  //   this.listEditPlay.bindToDOM(this.containerTaskTwo); // присваеваем ему div taskTwo из DOM
-  //   this.listEditPlay.drawUI(); // отрисовываем HTML в DOM
+  taskTwoInit() {
+    this.taskTwoDOM = new GalleryDOM(); // создаём класс управления DOM
+    this.taskTwoDOM.bindToDOM(this.containerTaskTwo); // присваеваем ему div taskTwo из DOM
+    this.taskTwoDOM.drawUI(); // отрисовываем HTML в DOM
 
-  //   this.listEditController = new ListEditController(this.listEditPlay); // создаём класс логики
-  //   this.listEditController.init(); // инициализируем класс логики
-  // }
+    this.taskTwoController = new GalleryControl(this.taskTwoDOM); // создаём класс логики
+    this.taskTwoController.init(); // инициализируем класс логики
+  }
 
   // создание Задачи № 3
   // taskThreeInit() {
-  //   this.tripCalendarPlay = new TripCalendarPlay(); // создаём класс управления DOM
-  //   this.tripCalendarPlay.bindToDOM(this.containerTaskThree); // присваеваем div taskThree из DOM
-  //   this.tripCalendarPlay.drawUI(); // отрисовываем HTML в DOM
+  //   this.taskThreeDOM = new TripCalendarPlay(); // создаём класс управления DOM
+  //   this.taskThreeDOM.bindToDOM(this.containerTaskThree); // присваеваем div taskThree из DOM
+  //   this.taskThreeDOM.drawUI(); // отрисовываем HTML в DOM
 
-  //   this.tripCalendarController = new TripCalendarController(this.tripCalendarPlay);
-  //   this.tripCalendarController.init(); // инициализируем класс логики
+  //   this.taskThreeController = new TripCalendarController(this.taskThreeDOM);
+  //   this.taskThreeController.init(); // инициализируем класс логики
   // }
 
   // удаление Задачи № 1
   taskOneRemove() {
-    this.trelloController.trelloDOM.clearHTML();
-    this.trelloDOM = '';
-    this.trelloController = '';
+    this.taskOneController.trelloDOM.clearHTML();
+    this.taskOneDOM = '';
+    this.taskOneController = '';
   }
 
   // удаление Задачи № 2
-  // taskTwoRemove() {
-  //   this.listEditController.listEditPlay.clearHTML();
-  //   this.listEditPlay = '';
-  //   this.listEditController = '';
-  // }
+  taskTwoRemove() {
+    this.taskTwoController.galleryDOM.clearHTML();
+    this.taskTwoDOM = '';
+    this.taskTwoController = '';
+  }
 
   // удаление Задачи № 3
   // taskThreeRemove() {
-  //   this.tripCalendarController.tripCalendarPlay.clearHTML();
-  //   this.tripCalendarPlay = '';
-  //   this.tripCalendarController = '';
+  //   this.taskThreeController.tripCalendarPlay.clearHTML();
+  //   this.taskThreeDOM = '';
+  //   this.taskThreeController = '';
   // }
 }
