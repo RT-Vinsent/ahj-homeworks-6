@@ -52,6 +52,13 @@ module.exports = {
           },
         },
       },
+      {
+        test: /\.pdf$/,
+        type: 'asset/resource',
+        generator: {
+            filename: path.join('books', '[name][ext]'),
+        },
+      },
     ],
   },
   plugins: [

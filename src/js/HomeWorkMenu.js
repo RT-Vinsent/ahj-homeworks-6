@@ -2,6 +2,8 @@ import TrelloDOM from './taskOne/TrelloDOM';
 import TrelloController from './taskOne/TrelloController';
 import GalleryDOM from './taskTwo/GalleryDOM';
 import GalleryControl from './taskTwo/GalleryControl';
+import DownManDOM from './taskThree/DownManDOM';
+import DownManControl from './taskThree/DownManControl';
 
 require('../css/HomeWorkMenu.css');
 
@@ -99,7 +101,7 @@ export default class HomeWorkMenu {
 
     this.taskRemover(); // удаление задач
 
-    // if (!this.taskThreeInited) { this.taskThreeInit(); } // инициализация Задачи № 3
+    if (!this.taskThreeInited) { this.taskThreeInit(); } // инициализация Задачи № 3
 
     this.taskOneInited = false; // состояние задачи № 1
     this.taskTwoInited = false; // состояние задачи № 2
@@ -110,7 +112,7 @@ export default class HomeWorkMenu {
   taskRemover() {
     if (this.taskOneInited) { this.taskOneRemove(); } // удаление Задачи № 1
     if (this.taskTwoInited) { this.taskTwoRemove(); } // удаление Задачи № 2
-    // if (this.taskThreeInited) { this.taskThreeRemove(); } // удаление Задачи № 3
+    if (this.taskThreeInited) { this.taskThreeRemove(); } // удаление Задачи № 3
   }
 
   // создание Задачи № 1
@@ -134,14 +136,14 @@ export default class HomeWorkMenu {
   }
 
   // создание Задачи № 3
-  // taskThreeInit() {
-  //   this.taskThreeDOM = new TripCalendarPlay(); // создаём класс управления DOM
-  //   this.taskThreeDOM.bindToDOM(this.containerTaskThree); // присваеваем div taskThree из DOM
-  //   this.taskThreeDOM.drawUI(); // отрисовываем HTML в DOM
+  taskThreeInit() {
+    this.taskThreeDOM = new DownManDOM(); // создаём класс управления DOM
+    this.taskThreeDOM.bindToDOM(this.containerTaskThree); // присваеваем div taskThree из DOM
+    this.taskThreeDOM.drawUI(); // отрисовываем HTML в DOM
 
-  //   this.taskThreeController = new TripCalendarController(this.taskThreeDOM);
-  //   this.taskThreeController.init(); // инициализируем класс логики
-  // }
+    this.taskThreeController = new DownManControl(this.taskThreeDOM);
+    this.taskThreeController.init(); // инициализируем класс логики
+  }
 
   // удаление Задачи № 1
   taskOneRemove() {
@@ -158,9 +160,9 @@ export default class HomeWorkMenu {
   }
 
   // удаление Задачи № 3
-  // taskThreeRemove() {
-  //   this.taskThreeController.tripCalendarPlay.clearHTML();
-  //   this.taskThreeDOM = '';
-  //   this.taskThreeController = '';
-  // }
+  taskThreeRemove() {
+    this.taskThreeController.downManDOM.clearHTML();
+    this.taskThreeDOM = '';
+    this.taskThreeController = '';
+  }
 }
